@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calorie and Diet Plan Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #555;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            margin-top: 20px;
+            background-color: #5cb85c;
+            color: #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Maintenance Calories and Diet Plan Calculator</h1>
+        
+        <label for="gender">Gender:</label>
+        <select id="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+
+        <label for="weight">Current Weight (kg):</label>
+        <input type="number" id="weight" step="0.1" required>
+
+        <label for="targetWeight">Target Weight (kg):</label>
+        <input type="number" id="targetWeight" step="0.1" required>
+
+        <label for="weeklyWeightLoss">Weight Change Goal per Week (kg):</label>
+        <input type="number" id="weeklyWeightLoss" step="0.1" required>
+
+        <label for="height">Height (cm):</label>
+        <input type="number" id="height" step="0.1" required>
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" required>
+
+        <label for="activityLevel">Activity Level:</label>
+        <select id="activityLevel">
+            <option value="1.2">Sedentary (little or no exercise)</option>
+            <option value="1.375">Lightly active (light exercise/sports 1-3 days/week)</option>
+            <option value="1.55">Moderately active (moderate exercise/sports 3-5 days/week)</option>
+            <option value="1.725">Very active (hard exercise/sports 6-7 days a week)</option>
+            <option value="1.9">Super active (very hard exercise & a physical job)</option>
+        </select>
+
+        <label for="goal">Goal:</label>
+        <select id="goal">
+            <option value="maintain">Maintain Weight</option>
+            <option value="loss">Lose Weight</option>
+            <option value="gain">Gain Weight</option>
+        </select>
+
+        <label for="dietaryPreference">Dietary Preference:</label>
+        <select id="dietaryPreference">
+            <option value="vegetarian">Vegetarian</option>
+            <option value="egg">Egg</option>
+            <option value="non-vegetarian">Non-Vegetarian</option>
+        </select>
+
+        <button type="button" onclick="calculateCalories()">Calculate</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function calculateBMR(gender, weight, height, age) {
+            return gender === 'male' 
+                ? 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
+                : 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+        }
+
+        function calculateMaintenanceCalories(bmr, activityLevel) {
+            return bmr * parseFloat(activityLevel);
+        }
+
+        function calculateCaloricAdjustment(weeklyWeightLoss, goal) {
+            const dailyDeficit = weeklyWeightLoss * 7700 / 7;
+            return goal === 'loss' ? -dailyDeficit : goal === 'gain' ? dailyDeficit : 0;
+        }
+
+        function suggestDietPlan(dietaryPreference, targetCalories) {
+            const mealPlans = {
+                vegetarian: [
+                    { meal: "Breakfast", food: "Poha with vegetables", calories: targetCalories * 0.2, protein: 5, fiber: 4 },
+                    { meal: "Mid-morning Snack", food: "Fruit Salad", calories: targetCalories * 0.1, protein: 1, fiber: 3 },
+                    { meal: "Lunch", food: "Rice, Green Dal, and Chapati", calories: targetCalories * 0.35, protein: 12, fiber: 8 },
+                    { meal: "Evening Snack", food: "Sprouts Salad", calories: targetCalories * 0.15, protein: 7, fiber: 5 },
+                    { meal: "Dinner", food: "Mixed Vegetable Curry and Chapati", calories: targetCalories * 0.2, protein: 10, fiber: 7 }
+                ],
+                egg: [
+                    { meal: "Breakfast", food: "Boiled Eggs and Toast", calories: targetCalories * 0.2, protein: 10, fiber: 2 },
+                    { meal: "Mid-morning Snack", food: "Apple", calories: targetCalories * 0.1, protein: 0, fiber: 4 },
+                    { meal: "Lunch", food: "Rice, Green Dal, and Chapati", calories: targetCalories * 0.35, protein: 15, fiber: 8 },
+                    { meal: "Evening Snack", food: "Yogurt with Fruit", calories: targetCalories * 0.15, protein: 8, fiber: 2 },
+                    { meal: "Dinner", food: "Egg Curry with Chapati", calories: targetCalories * 0.2, protein: 12, fiber: 6 }
+                ],
+                "non-vegetarian": [
+                    { meal: "Breakfast", food: "Egg Bhurji with Chapati", calories: targetCalories * 0.2, protein: 15, fiber: 2 },
+                    { meal: "Mid-morning Snack", food: "Banana", calories: targetCalories * 0.1, protein: 1, fiber: 3 },
+                    { meal: "Lunch", food: "Rice, Chicken Curry, and Chapati", calories: targetCalories * 0.35, protein: 20, fiber: 5 },
+                    { meal: "Evening Snack", food: "Nuts and Seeds Mix", calories: targetCalories * 0.15, protein: 6, fiber: 4 },
+                    { meal: "Dinner", food: "Fish Curry and Chapati", calories: targetCalories * 0.2, protein: 15, fiber: 4 }
+                ]
+            };
+
+            let dietPlan = `<h2>Your Recommended Diet Plan:</h2>`;
+            dietPlan += `<p>Daily Calorie Target: ${targetCalories.toFixed(0)} kcal</p>`;
+            dietPlan += `<ul>`;
+            mealPlans[dietaryPreference].forEach(item => {
+                dietPlan += `<li><strong>${item.meal}</strong>: ${item.food} - ${item.calories.toFixed(0)} kcal, Protein: ${item.protein}g, Fiber: ${item.fiber}g</li>`;
+            });
+            dietPlan += `</ul>`;
+
+            return dietPlan;
+        }
+
+        function calculateCalories() {
+            const gender = document.getElementById("gender").value;
+            const weight = parseFloat(document.getElementById("weight").value);
+            const targetWeight = parseFloat(document.getElementById("targetWeight").value);
+            const weeklyWeightLoss = parseFloat(document.getElementById("weeklyWeightLoss").value);
+            const height = parseFloat(document.getElementById("height").value);
+            const age = parseInt(document.getElementById("age").value);
+            const activityLevel = document.getElementById("activityLevel").value;
+            const goal = document.getElementById("goal").value;
+            const dietaryPreference = document.getElementById("dietaryPreference").value;
+
+            if (!weight || !targetWeight || !weeklyWeightLoss || !height || !age) {
+                document.getElementById("result").innerHTML = `<p style="color: red;">Please fill in all fields.</p>`;
+                return;
+            }
+
+            const bmr = calculateBMR(gender, weight, height, age);
+            const maintenanceCalories = calculateMaintenanceCalories(bmr, activityLevel);
+            const caloricAdjustment = calculateCaloricAdjustment(weeklyWeightLoss, goal);
+            const targetCalories = maintenanceCalories + caloricAdjustment;
+
+            document.getElementById("result").innerHTML = suggestDietPlan(dietaryPreference, targetCalories);
+        }
+    </script>
+</body>
+</html>
